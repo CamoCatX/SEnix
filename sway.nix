@@ -2,19 +2,19 @@
 { pkgs, lib, ... }:
 
 {
-  #enviroment.systemPackages = with pkgs; [
-   # swaybg
-    #waybar
-    #mako
-    #nwg-launchers
-    #autotiling
-    #wayshot
+  enviroment.systemPackages = with pkgs; [
+    swaybg
+    waybar
+    mako
+    nwg-launchers
+    autotiling
+    wayshot
 
     # TODO: use the below!
     # gammastep
     # swayidle
     # kanshi
- # ];
+  ];
 
   wayland.windowManager.sway = {
     enable = true;
