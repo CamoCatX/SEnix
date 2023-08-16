@@ -36,17 +36,12 @@ in
     htop
     unstable.distrobox
     vlc
-    minecraft
     podman
-    android-studio
-    nix-index
     nano
     helvum
     htop
     bsdgames
     home-manager
-    playonlinux
-    winetricks
   ];
 	    
   nixpkgs.config.allowUnfree = true;
@@ -102,31 +97,6 @@ in
   };
   
  # programs.sway.enable = true;     
- #   # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-    autorun = true;
-    layout = "us";
-    desktopManager = {
-      xterm.enable = false;
-    };
- #
-    windowManager.i3 = {
-      enable = true;
-      package = pkgs.i3;
-    };
- #  # Enable display manager (light dm)
-    displayManager = {
-      defaultSession = "none+i3"; 
-      lightdm = { 
-        enable = true;
-      }; 
-    };
- #  # #windowManager.i3.config = "/etc/nixos/i3/config";  # Path to your i3 configuration
-  };
-
-  programs.dconf.enable = true;
-
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
@@ -138,9 +108,7 @@ in
     alsa.support32Bit = true;
     pulse.enable = true;
   };
-  # Fix for pipewire-pulse breaking recently
-  systemd.user.services.pipewire-pulse.path = [ pkgs.pulseaudio ];
-            
+
   # Define a user account.
   users = {
     defaultUserShell = pkgs.zsh;
