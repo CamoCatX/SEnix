@@ -144,21 +144,12 @@ in
       };
     };
  
-  boot.kernelPackages = pkgs.linuxPackages_hardened;
-
   #No default packages
   environment.defaultPackages = lib.mkForce [];
     
   # Coredump gives infomation (sometimes sensitive) during crash
   # and also slows down the system when something crashes
   systemd.coredump.enable = false; 
-
-  # Prevent replacing the running kernel w/o reboot
-  security.protectKernelImage = true;
-  #security.lockKernelModules = true;
-  security.virtualisation.flushL1DataCache = "always";
-  security.sudo.execWheelOnly = true;
-  security.forcePageTableIsolation = true;
 
   # /tmp mounted on RAM, faster temp file management
   boot.tmp = {
