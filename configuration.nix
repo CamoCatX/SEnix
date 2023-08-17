@@ -76,12 +76,7 @@ in
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
   };
-  environment.sessionVariables = {
-    MOZ_ENABLE_WAYLAND = "1";
-    XDG_CURRENT_DESKTOP = "sway"; 
-  };
-  
- # programs.sway.enable = true;     
+     
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
