@@ -53,12 +53,6 @@ in
     meslo-lgs-nf
   ];
 
-  # Bootloader.
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
-  };
-
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
@@ -117,12 +111,6 @@ in
   #Copy system config, so I can make a backup 
   system.copySystemConfiguration = true;
   
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It's perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value, read the documentation for this option
-  # (e.g., man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
   
   #This is where the security stuff is.
@@ -141,19 +129,6 @@ in
  
   #No default packages
   environment.defaultPackages = lib.mkForce [];
-    
-  # Coredump gives infomation (sometimes sensitive) during crash
-  # and also slows down the system when something crashes
-  systemd.coredump.enable = false; 
-
-  # /tmp mounted on RAM, faster temp file management
-  boot.tmp = {
-    useTmpfs = lib.mkDefault true;
-    cleanOnBoot = lib.mkDefault (!config.boot.tmp.useTmpfs);
-  };
-
-  # extra security
-  boot.loader.systemd-boot.editor = false;
 
   # Home-manager config
   home-manager.users.jabbu = { pkgs, ... }: {
