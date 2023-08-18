@@ -41,6 +41,7 @@ in
   nixpkgs.config.allowUnfree = true;
   hardware.enableAllFirmware  = true;
   programs.light.enable = true;
+  nix.settings.allowed-users = mkDefault [ "@users" ];
   
   # Automatic upgrades
   system.autoUpgrade.enable = true;
