@@ -15,4 +15,5 @@
   };
   # extra security
   boot.loader.systemd-boot.editor = false;
+  security.polkit.enable = true;
 }
