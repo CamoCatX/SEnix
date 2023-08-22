@@ -15,6 +15,7 @@ in
       ./locals.nix
       ./kernel.nix
       ./boot.nix
+      ./sudo.nix
     ];
 
   nixpkgs.config = {
