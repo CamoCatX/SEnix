@@ -59,6 +59,7 @@ in
   # Define a user account.
   users = {
     defaultUserShell = pkgs.zsh;
+    mutableUsers = false;
     users.jabbu = {
       isNormalUser = true;
       home = "/home/jabbu";
