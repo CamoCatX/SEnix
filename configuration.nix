@@ -41,6 +41,7 @@ in
     home-manager
     unstable.chkrootkit
     unstable.lynis
+    unstable.pciutils
   ];
 	    
   nixpkgs.config.allowUnfree = true;
