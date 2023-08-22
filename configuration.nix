@@ -21,21 +21,22 @@ in
   };
   environment.systemPackages = with pkgs; [
     wget
-    ffmpeg
-    sl
-    nyancat
-    git
+    unstable.ffmpeg
+    unstable.sl
+    unstable.nyancat
+    unstable.git
     curl
-    ranger
-    firefox-devedition
-    htop
+    unstable.ranger
+    unstable.firefox-devedition
+    unstable.htop
     unstable.distrobox
-    vlc
-    podman
-    nano
-    htop
+    unstable.vlc
+    unstable.podman
+    unstable.nano
     bsdgames
     home-manager
+    unstable.chkrootkit
+    unstable.lynis
   ];
 	    
   nixpkgs.config.allowUnfree = true;
