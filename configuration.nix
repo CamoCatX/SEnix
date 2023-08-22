@@ -31,7 +31,6 @@ in
     unstable.htop
     unstable.distrobox
     unstable.vlc
-    unstable.podman
     unstable.nano
     bsdgames
     home-manager
@@ -42,7 +41,7 @@ in
   nixpkgs.config.allowUnfree = true;
   hardware.enableAllFirmware  = true;
   programs.light.enable = true;
-  nix.settings.allowed-users = mkDefault [ "@users" ];
+  nix.settings.allowed-users = mkDefault [ "jabbu" ];
   
   # Automatic upgrades
   system.autoUpgrade.enable = true;
@@ -64,12 +63,14 @@ in
     users.jabbu = {
       isNormalUser = true;
       home = "/home/jabbu";
-      extraGroups = [ "networkmanager" "wheel" "video" "audio" "lp" "scanner" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "audio" "lp" "scanner" "podman" ];
       shell = pkgs.zsh;
     };
   };
 
   programs.zsh.enable = true;
+  security.allowUserNamespaces = false;
+
   # Podman
   virtualisation = {
     podman = {
@@ -80,6 +81,7 @@ in
 
       # Required for containers under podman-compose to be able to talk to each other.
       defaultNetwork.settings.dns_enabled = true;
+      dockerSocket.enable = true;
     };
   };
  
@@ -118,4 +120,3 @@ in
      };
   };  
 }
-
