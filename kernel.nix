@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 {
-   boot.kernelPackages = pkgs.linuxPackages_hardened;
+   boot.kernelPackages = pkgs.linuxPackages_latest_hardened;
 
    # Prevent replacing the running kernel w/o reboot
    security.protectKernelImage = true;
@@ -24,4 +24,5 @@
      "netrom"
      "rose"
    ];
+   boot.kernel.sysctl = { "kernel.dmesg_restrict" = 1; };
 }
