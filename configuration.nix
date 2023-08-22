@@ -10,6 +10,11 @@ in
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       <home-manager/nixos>
+      ./sound.nix
+      ./networking.nix
+      ./locals.nix
+      ./kernel.nix
+      ./boot.nix
     ];
 
   nixpkgs.config = {
@@ -68,7 +73,6 @@ in
     };
   };
 
-  programs.zsh.enable = true;
   security.allowUserNamespaces = false;
 
   # Podman
