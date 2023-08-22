@@ -58,7 +58,7 @@ in
     source-code-pro
     meslo-lgs-nf
   ];
-     
+
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
@@ -113,15 +113,25 @@ in
   environment.defaultPackages = lib.mkForce [];
 
   # Home-manager config
-  home-manager.users.jabbu = { pkgs, ... }: {
+  home-manager.users.jabbu = { pkgs, config, ... }:
+  let
+    pkgsUnstable = import <nixpkgs-unstable> {};
+  in
+  {
     home.stateVersion = "23.05";
+    home-manager.useGlobalPkgs = true;
     home.packages = [ ];
     #Kitty terminal
-     programs.kitty = { 
-       enable = true;
-       font.package = pkgs.meslo-lgs-nf;
-       font.name = "meslo-lgs-nf";
-       theme = "Homebrew";
-     };
-  };  
-}
+    programs.kitty = { 
+      enable = true;
+      font.package = pkgs.meslo-lgs-nf;
+      font.name = "meslo-lgs-nf";
+      theme = "Homebrew";
+    };
+
+    nixpkgs.overlays = [
+      (self: super: {
+        kitty = pkgsUnstable.kitty;
+      })
+    ];
+  }
