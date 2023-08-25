@@ -8,6 +8,7 @@
 
 {
   services.flatpak.enable = true;
+  xdg.portal.enable = true;
   system.activationScripts = {
     flatpak.text =
       ''
