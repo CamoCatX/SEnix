@@ -1,11 +1,8 @@
 { config, pkgs, lib, ... }:
-
-let
-  unstableTarball =
-    fetchTarball
-      https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz;
-in 
 {
+let
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -17,32 +14,24 @@ in
       ./boot.nix
       ./sudo.nix
     ];
-
-  nixpkgs.config = {
-    packageOverrides = pkgs: {
-      unstable = import unstableTarball {
-        config = config.nixpkgs.config;
-      };
-    };
-  };
   environment.systemPackages = with pkgs; [
     wget
-    unstable.ffmpeg
-    unstable.sl
-    unstable.nyancat
-    unstable.git
+    ffmpeg
+    sl
+    nyancat
+    git
     curl
-    unstable.ranger
-    unstable.firefox-devedition
-    unstable.htop
-    unstable.distrobox
-    unstable.vlc
-    unstable.nano
+    ranger
+    htop
+    distrobox
+    vlc
+    nano
     bsdgames
-    home-manager
-    unstable.chkrootkit
-    unstable.lynis
-    unstable.pciutils
+    chkrootkit
+    lynis
+    pciutils
+    cmatrix
+    nurl
   ];
 	    
   nixpkgs.config.allowUnfree = true;
@@ -100,28 +89,18 @@ in
   #SElinux is better then apparmour security wise, but apprmor is more engrained in the Nix ecosystem.
   security.apparmor.enable = true;
   security.apparmor.killUnconfinedConfinables = true;
-  #Firejail is a sandbox, so if something is compermised, then it can't spread.
-  programs.firejail.enable = true;
-  # Firefox
-  programs.firejail.wrappedBinaries = {
-    firefox = {
-        executable = "${pkgs.lib.getBin pkgs.firefox}/bin/firefox";
-        profile = "${pkgs.firejail}/etc/firejail/firefox.profile";
-      };
-    };
- 
+
   #No default packages
   environment.defaultPackages = lib.mkForce [];
 
   # Home-manager config
   home-manager.users.jabbu = { pkgs, config, ... }:
-  let
-    pkgsUnstable = import <nixpkgs-unstable> {};
-  in
   {
     home.stateVersion = "23.05";
     home-manager.useGlobalPkgs = true;
     home.packages = [ ];
+    programs.command-not-found.enable = true;
+
     #Kitty terminal
     programs.kitty = { 
       enable = true;
@@ -129,10 +108,5 @@ in
       font.name = "meslo-lgs-nf";
       theme = "Homebrew";
     };
-
-    nixpkgs.overlays = [
-      (self: super: {
-        kitty = pkgsUnstable.kitty;
-      })
-    ];
   }
+}
