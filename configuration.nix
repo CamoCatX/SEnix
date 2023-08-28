@@ -36,7 +36,6 @@ in
   ];
 	    
   nixpkgs.config.allowUnfree = true;
-  hardware.enableAllFirmware  = true;
   programs.light.enable = true;
   nix.settings.allowed-users = mkDefault [ "jabbu" ];
   
