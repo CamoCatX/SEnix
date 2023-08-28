@@ -13,6 +13,7 @@ in
       ./kernel.nix
       ./boot.nix
       ./sudo.nix
+      ./firefox.nix
     ];
   environment.systemPackages = with pkgs; [
     wget
@@ -41,6 +42,7 @@ in
   
   # Automatic upgrades
   system.autoUpgrade.enable = true;
+  system.autoUpgrade.channel = "https://channels.nixos.org/nixos-unstable";
 
   # Font config
   fonts.fonts = with pkgs; [
