@@ -1,8 +1,9 @@
 { config, pkgs, lib, ... }:
-{
+
 let
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
 in
+{
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -38,6 +39,7 @@ in
   nixpkgs.config.allowUnfree = true;
   programs.light.enable = true;
   nix.settings.allowed-users = mkDefault [ "jabbu" ];
+  hardware.rtl-sdr.enable = true;
   
   # Automatic upgrades
   system.autoUpgrade.enable = true;
@@ -60,7 +62,7 @@ in
     users.jabbu = {
       isNormalUser = true;
       home = "/home/jabbu";
-      extraGroups = [ "networkmanager" "wheel" "video" "audio" "lp" "scanner" "podman" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "audio" "lp" "scanner" "podman" "plugdev"];
       shell = pkgs.zsh;
     };
   };
@@ -80,13 +82,12 @@ in
       dockerSocket.enable = true;
     };
   };
- 
+
   #Copy system config, so I can make a backup 
   system.copySystemConfiguration = true;
   
   system.stateVersion = "23.05"; # Did you read the comment?
   
-  #This is where the security stuff is.
   #SElinux is better then apparmour security wise, but apprmor is more engrained in the Nix ecosystem.
   security.apparmor.enable = true;
   security.apparmor.killUnconfinedConfinables = true;
@@ -101,6 +102,10 @@ in
     home-manager.useGlobalPkgs = true;
     home.packages = [ ];
     programs.command-not-found.enable = true;
+    imports = [
+      ./sway.nix
+      ./zsh.nix
+    ];
 
     #Kitty terminal
     programs.kitty = { 
