@@ -1,24 +1,28 @@
 { config, pkgs, lib, ... }:
 {
   home-manager.users.jabbu = { pkgs, config, lib, ... }: {
-     home.sessionVariables = {
-        BROWSER = "firefox";
-      };
-
     programs.firefox = {
       enable = true;
       package = pkgs.wrapFirefox pkgs.firefox-devedition-unwrapped {
       extensions = with pkgs.nur.repos.rycee.firefox-addons; [
             ublock-origin
+            https-everywhere
+            bitwarden
+            clearurls
+            decentraleyes
             duckduckgo-privacy-essentials
-            bypass-paywalls-clean
-            censor-tracker
-            darkreader
-            behave
+            floccus
+            ghostery
+            privacy-redirect
+            privacy-badger
+            languagetool
+            disconnect
+            react-devtools
         ];
         profiles = {
-          default = {
-            isDefault = true;
+          jabbu = {
+            id = 0;
+            name = "jabbu";
               search = {
                 force = true;
                 default = "DuckDuckGo";
@@ -130,9 +134,22 @@
 		user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 		user_pref("browser.messaging-system.whatsNewPanel.enabled", false);
               '';
-          }; 
-        };
-      };
-    };
+                userChrome = ''
+                 # a css 
+                ";
+                userContent = ''                 
+                  menupopup:not(.in-menulist) > menuitem, 
+                  menupopup:not(.in-menulist) > menu {
+                  padding-block: 4px !important; /* reduce to 3px, 2px, 1px or 0px as needed */ 
+                  min-height: unset !important; /* v92.0 - for padding below 4px */
+                  }
+                  :root {
+                  --arrowpanel-menuitem-padding: 4px 8px !important;
+                  }
+                  .tabbrowser-tab[fadein]:not([style^="max-width"]){ max-width: 100vw !important }
+                  
+                '';
+            };
+        };    };
   };
 }

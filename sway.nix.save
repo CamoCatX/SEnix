@@ -1,40 +1,33 @@
 { pkgs, lib, ... }:
 
 {
-  services.xserver.excludePackages = [ pkgs.xterm ];
-
   home-manager.users.jabbu = { pkgs, config, lib, ... }: {
-    home.packages = with pkgs; [
+    enviroment.systemPackages = with pkgs; [
       swaybg
       waybar
       mako
       nwg-launchers
       autotiling
       wayshot
-      brightnessctl
     ];
-    
-    programs.swaylock.enable = true;
-    services.swayidle.enable = true;
-    services.swayosd.enable = true;
+
     wayland.windowManager.sway = {
       enable = true;
       package = pkgs.swayfx;
+
       wrapperFeatures.gtk = true;
-      wrapperFeatures.base = true;
 
       extraSessionCommands = ''
-        _JAVA_AWT_WM_NONREPARENTING=1
-        XDG_SESSION_TYPE=wayland
-        XDG_SESSION_DESKTOP=sway
-        XDG_CURRENT_DESKTOP=sway
-        QT_QPA_PLATFORM=wayland
-        QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-        CLUTTER_BACKEND=wayland
-        SDL_VIDEODRIVER=wayland
-        MOZ_ENABLE_WAYLAND = "1";
-        NIXOS_OZONE_WL = "1";
+        export _JAVA_AWT_WM_NONREPARENTING=1
+        export XDG_SESSION_TYPE=wayland
+        export XDG_SESSION_DESKTOP=sway
+        export XDG_CURRENT_DESKTOP=sway
+        export QT_QPA_PLATFORM=wayland
+        export CLUTTER_BACKEND=wayland
+        export SDL_VIDEODRIVER=wayland
+        export MOZ_ENABLE_WAYLAND = "1"; 
       '';
+
       config = {
         # super key
         modifier = "Mod4";
@@ -127,22 +120,16 @@
           "${mod}+minus" = "scratchpad show";
           "${mod}+r" = "mode \"resize\"";
           # Audio
+          "XF86AudioRaiseVolume" = "exec set-volume inc 1";
+          "XF86AudioLowerVolume" = "exec set-volume dec 1";
+          "XF86AudioMute" = "exec set-volume toggle-mute";
           "XF86AudioStop" = "exec ${pkgs.playerctl}/bin/playerctl stop";
           "XF86AudioPrev" = "exec ${pkgs.playerctl}/bin/playerctl previous";
           "XF86AudioNext" = "exec ${pkgs.playerctl}/bin/playerctl next";
           "XF86AudioPlay" = "exec ${pkgs.playerctl}/bin/playerctl play-pause";
-          # Sink volume raise optionally with --device
-          "XF86AudioRaiseVolume" = "exec ${pkgs.swayosd} --output-volume raise";
-          # Sink volume lower optionally with --device
-          "XF86AudioLowerVolume" = "exec ${pkgs.swayosd} --output-volume lower";
-          # Sink volume toggle mute
-          "XF86AudioMute" = "exec ${pkgs.swayosd} --output-volume mute-toggle";
-          # Source volume toggle mute
-          "XF86AudioMicMute" =  "exec ${pkgs.swayosd} --input-volume mute-toggle";
-          # Brightness raise
-          "XF86MonBrightnessUp" = "exec ${pkgs.swayosd} --brightness raise";
-          # Brightness lower
-          "XF86MonBrightnessDown" = "exec ${pkgs.swayosd} --brightness lower";
+          # TODO: IF LAPTOP
+          "XF86MonBrightnessDown" = "exec brightnessctl set 15%-";
+          "XF86MonBrightnessUp" =  "exec brightnessctl set +15%";
         };
       };
 
