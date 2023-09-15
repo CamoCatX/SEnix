@@ -1,5 +1,5 @@
 <h1 align="center"> system.nix </h1> <div align="center"> <img src="./logo.png"><br>
-  My personal NixOS configurations with a focus on security, privacy, and customization
+  My personal NixOS configurations with a focus on security, privacy, and reproducibility.
 </a><br> 
 </div>
  
