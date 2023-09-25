@@ -3,103 +3,75 @@
   security.auditd.enable = true;
   security.audit.enable = true;
   security.audit.rules = [
-    #      ___             ___ __      __
-#     /   | __  ______/ (_) /_____/ /
-#    / /| |/ / / / __  / / __/ __  /
-#   / ___ / /_/ / /_/ / / /_/ /_/ /
-#  /_/  |_\__,_/\__,_/_/\__/\__,_/
-#
-# Linux Audit Daemon - Best Practice Configuration
+    
 # /etc/audit/audit.rules
 #
-# Compiled by Florian Roth
-#
-# Created  : 2017/12/05
-# Modified : 2023/01/25
-#
-# Based on rules published here:
-#   Gov.uk auditd rules
-#   	https://github.com/gds-operations/puppet-auditd/pull/1
-# 	CentOS 7 hardening
-# 		https://highon.coffee/blog/security-harden-centos-7/#auditd---audit-daemon
-# 	Linux audit repo
-# 		https://github.com/linux-audit/audit-userspace/tree/master/rules
-# 	Auditd high performance linux auditing
-# 		https://linux-audit.com/tuning-auditd-high-performance-linux-auditing/
-#
-# Further rules
-# 	For PCI DSS compliance see:
-# 		https://github.com/linux-audit/audit-userspace/blob/master/rules/30-pci-dss-v31.rules
-# 	For NISPOM compliance see:
-# 		https://github.com/linux-audit/audit-userspace/blob/master/rules/30-nispom.rules
-
-# Remove any existing rules
--D
+# Thanks to Florian Roth
 
 # Buffer Size
 ## Feel free to increase this if the machine panic's
--b 8192
+"-b 8192"
 
 # Failure Mode
 ## Possible values: 0 (silent), 1 (printk, print a failure message), 2 (panic, halt the system)
--f 1
+"-f 1"
 
 # Ignore errors
 ## e.g. caused by users or files not found in the local environment
--i
+"-i"
 
 # Self Auditing ---------------------------------------------------------------
 
 ## Audit the audit logs
 ### Successful and unsuccessful attempts to read information from the audit records
--w /var/log/audit/ -p wra -k auditlog
--w /var/audit/ -p wra -k auditlog
+"-w /var/log/audit/ -p wra -k auditlog"
+"-w /var/audit/ -p wra -k auditlog"
 
 ## Auditd configuration
 ### Modifications to audit configuration that occur while the audit collection functions are operating
--w /etc/audit/ -p wa -k auditconfig
--w /etc/libaudit.conf -p wa -k auditconfig
--w /etc/audisp/ -p wa -k audispconfig
+"-w /etc/audit/ -p wa -k auditconfig"
+"-w /etc/libaudit.conf -p wa -k auditconfig"
+"-w /etc/audisp/ -p wa -k audispconfig"
 
 ## Monitor for use of audit management tools
--w /sbin/auditctl -p x -k audittools
--w /sbin/auditd -p x -k audittools
--w /usr/sbin/auditd -p x -k audittools
--w /usr/sbin/augenrules -p x -k audittools
+"-w /sbin/auditctl -p x -k audittools"
+"-w /sbin/auditd -p x -k audittools"
+"-w /usr/sbin/auditd -p x -k audittools"
+"-w /usr/sbin/augenrules -p x -k audittools"
 
 ## Access to all audit trails
 
--a always,exit -F path=/usr/sbin/ausearch -F perm=x -k audittools
--a always,exit -F path=/usr/sbin/aureport -F perm=x -k audittools
--a always,exit -F path=/usr/sbin/aulast -F perm=x -k audittools
--a always,exit -F path=/usr/sbin/aulastlogin -F perm=x -k audittools
--a always,exit -F path=/usr/sbin/auvirt -F perm=x -k audittools
+"-a always,exit -F path=/usr/sbin/ausearch -F perm=x -k audittools"
+"-a always,exit -F path=/usr/sbin/aureport -F perm=x -k audittools"
+"-a always,exit -F path=/usr/sbin/aulast -F perm=x -k audittools"
+"-a always,exit -F path=/usr/sbin/aulastlogin -F perm=x -k audittools"
+"-a always,exit -F path=/usr/sbin/auvirt -F perm=x -k audittools"
 
 # Filters ---------------------------------------------------------------------
 
 ### We put these early because audit is a first match wins system.
 
 ## Ignore SELinux AVC records
--a always,exclude -F msgtype=AVC
+"-a always,exclude -F msgtype=AVC"
 
 ## Ignore current working directory records
--a always,exclude -F msgtype=CWD
+"-a always,exclude -F msgtype=CWD"
 
 ## Cron jobs fill the logs with stuff we normally don't want (works with SELinux)
--a never,user -F subj_type=crond_t
--a never,exit -F subj_type=crond_t
+"-a never,user -F subj_type=crond_t"
+"-a never,exit -F subj_type=crond_t"
 
 ## This prevents chrony from overwhelming the logs
--a never,exit -F arch=b64 -S adjtimex -F auid=-1 -F uid=chrony -F subj_type=chronyd_t
+"-a never,exit -F arch=b64 -S adjtimex -F auid=-1 -F uid=chrony -F subj_type=chronyd_t"
 
 ## This is not very interesting and wastes a lot of space if the server is public facing
--a always,exclude -F msgtype=CRYPTO_KEY_USER
+"-a always,exclude -F msgtype=CRYPTO_KEY_USER"
 
 ## Open VM Tools
--a exit,never -F arch=b64 -S all -F exe=/usr/bin/vmtoolsd
+"-a exit,never -F arch=b64 -S all -F exe=/usr/bin/vmtoolsd"
 
 ## High Volume Event Filter (especially on Linux Workstations)
--a never,exit -F arch=b64 -F dir=/dev/shm -k sharedmemaccess
+"-a never,exit -F arch=b64 -F dir=/dev/shm -k sharedmemaccess"
 -a never,exit -F arch=b64 -F dir=/var/lock/lvm -k locklvm
 
 ## FileBeat
