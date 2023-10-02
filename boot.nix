@@ -13,5 +13,4 @@
     useTmpfs = lib.mkDefault true;
     cleanOnBoot = lib.mkDefault (!config.boot.tmp.useTmpfs);
   };
-  security.polkit.enable = true;
 }
