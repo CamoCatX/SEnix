@@ -5,6 +5,7 @@
 
   # Prevent replacing the running kernel w/o reboot
   security.protectKernelImage = true;
+  # Same thing with the kernal modules, NOTE: sudo nixos-rebuild switch has problems with this option
   security.lockKernelModules = true;
   security.virtualisation.flushL1DataCache = "always";
   security.sudo.execWheelOnly = true;  
