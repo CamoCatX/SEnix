@@ -86,5 +86,4 @@
   };
 
   boot.kernelModules = ["tcp_bbr"];
-  boot.kernel.sysctl = { "kernel.dmesg_restrict" = 1; };
 }
