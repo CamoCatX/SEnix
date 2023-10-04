@@ -62,6 +62,7 @@
     # Protects against SYN flood attacks
     # https://en.wikipedia.org/wiki/SYN_cookies
     "net.ipv4.tcp_syncookies" = 1;
+    "net.ipv4.tcp_synack_retries = 5"
 
     # Incomplete protection again TIME-WAIT assassination
     "net.ipv4.tcp_rfc1337" = 1;
@@ -78,6 +79,9 @@
 
     "kernel.yama.ptrace_scope" = 1;
     "kernel.kptr_restrict" = 2;
+
+    # Virtual address randomization
+    "kernel.randomize_va_space = 2"
   };
 
   boot.kernelModules = ["tcp_bbr"];
