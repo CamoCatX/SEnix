@@ -81,8 +81,6 @@
     "kernel.yama.ptrace_scope" = 1;
     "kernel.kptr_restrict" = 2;
 
-    # Virtual address randomization
-    "kernel.randomize_va_space = 2"
   };
 
   boot.kernelModules = ["tcp_bbr"];
