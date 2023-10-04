@@ -81,6 +81,8 @@
     "kernel.yama.ptrace_scope" = 1;
     "kernel.kptr_restrict" = 2;
 
+    "kernel.dmesg_restrict" = 1;
+
   };
 
   boot.kernelModules = ["tcp_bbr"];
