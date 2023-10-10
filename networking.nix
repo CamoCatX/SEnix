@@ -6,6 +6,7 @@
   networking.networkmanager.wifi.scanRandMacAddress = true;
   networking.networkmanager.wifi.macAddress = "random";
   networking.networkmanager.ethernet.macAddress = "random";
+  networking.tempAddresses = "enabled";
   #How to connect to wifi nmcli dev wifi connect <mySSID> password <myPassword>
   #If already nmcli con up <mySSID>
   #Or just nmtui
