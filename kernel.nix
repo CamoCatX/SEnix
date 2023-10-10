@@ -84,6 +84,5 @@
     "kernel.dmesg_restrict" = 1;
 
   };
-
   boot.kernelModules = ["tcp_bbr"];
 }
