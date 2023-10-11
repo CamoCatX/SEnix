@@ -1,7 +1,8 @@
 { config, pkgs, lib, ... }:
 {
   boot.kernelPackages = pkgs.zfs.latestCompatibleLinuxPackages;
-  services.zfs.autoScrub.enable = true;                       
+  services.zfs.autoScrub.enable = true; 
+  boot.zfs.forceImportRoot = false; # If you set this option to false and NixOS subsequently fails to boot because it cannot import the root pool, you should boot with the zfs_force=1 option as a kernel parameter 
 
   # Prevent replacing the running kernel w/o reboot
   security.protectKernelImage = true;
@@ -21,6 +22,8 @@
     # NixOS produces many wakeups per second, which is bad for battery life.
     # This kernel parameter disables the timer tick on the last 4 cores
     "nohz_full=4-7"
+
+    "zfs_force=1"
   ];
 
   boot.blacklistedKernelModules = [
