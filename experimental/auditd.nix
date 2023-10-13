@@ -9,7 +9,7 @@
 # Thanks to Florian Roth
 
 # Buffer Size
-## Feel free to increase this if the machine panic's
+## Feel free to increase this if the machine panics
 "-b 8192"
 
 # Failure Mode
@@ -72,10 +72,10 @@
 
 ## High Volume Event Filter (especially on Linux Workstations)
 "-a never,exit -F arch=b64 -F dir=/dev/shm -k sharedmemaccess"
--a never,exit -F arch=b64 -F dir=/var/lock/lvm -k locklvm
+"-a never,exit -F arch=b64 -F dir=/var/lock/lvm -k locklvm"
 
 ## FileBeat
--a never,exit -F arch=b64 -F path=/opt/filebeat -k filebeat
+"-a never,exit -F arch=b64 -F path=/opt/filebeat -k filebeat"
 
 ## More information on how to filter events
 ### https://access.redhat.com/solutions/2482221
@@ -83,8 +83,8 @@
 # Rules -----------------------------------------------------------------------
 
 ## Kernel parameters
--w /etc/sysctl.conf -p wa -k sysctl
--w /etc/sysctl.d -p wa -k sysctl
+"-w /etc/sysctl.conf -p wa -k sysctl"
+"-w /etc/sysctl.d -p wa -k sysctl"
 
 ## Kernel module loading and unloading
 -a always,exit -F perm=x -F auid!=-1 -F path=/sbin/insmod -k modules
@@ -403,10 +403,6 @@
 -w /usr/local/bin/clush -p x -k susp_shell
 -w /etc/clustershell/clush.conf -p x -k susp_shell
 
-### https://github.com/tmux/tmux
--w /bin/tmux -p x -k susp_shell
--w /usr/local/bin/tmux -p x -k susp_shell
-
 ## Shell/profile configurations
 -w /etc/profile.d/ -p wa -k shell_profiles
 -w /etc/profile -p wa -k shell_profiles
@@ -414,7 +410,6 @@
 -w /etc/bashrc -p wa -k shell_profiles
 -w /etc/csh.cshrc -p wa -k shell_profiles
 -w /etc/csh.login -p wa -k shell_profiles
--w /etc/fish/ -p wa -k shell_profiles
 -w /etc/zsh/ -p wa -k shell_profiles
 
 ### https://github.com/xxh/xxh
@@ -451,27 +446,6 @@
 
 # Software Management ---------------------------------------------------------
 
-# RPM (Redhat/CentOS)
--w /usr/bin/rpm -p x -k software_mgmt
--w /usr/bin/yum -p x -k software_mgmt
-
-# DNF (Fedora/RedHat 8/CentOS 8)
--w /usr/bin/dnf -p x -k software_mgmt
-
-# YAST/Zypper/RPM (SuSE)
--w /sbin/yast -p x -k software_mgmt
--w /sbin/yast2 -p x -k software_mgmt
--w /bin/rpm -p x -k software_mgmt
--w /usr/bin/zypper -k software_mgmt
-
-# DPKG / APT-GET (Debian/Ubuntu)
--w /usr/bin/dpkg -p x -k software_mgmt
--w /usr/bin/apt -p x -k software_mgmt
--w /usr/bin/apt-add-repository -p x -k software_mgmt
--w /usr/bin/apt-get -p x -k software_mgmt
--w /usr/bin/aptitude -p x -k software_mgmt
--w /usr/bin/wajig -p x -k software_mgmt
--w /usr/bin/snap -p x -k software_mgmt
 
 # PIP(3) (Python installs)
 -w /usr/bin/pip -p x -k third_party_software_mgmt
@@ -487,106 +461,17 @@
 ## https://docs.npmjs.com/cli/v6/commands/npm-audit
 -w /usr/bin/npm -p x -k third_party_software_mgmt
 
-# Comprehensive Perl Archive Network (CPAN) (CPAN installs)
-## T1072 third party software
-## https://www.cpan.org
--w /usr/bin/cpan -p x -k third_party_software_mgmt
-
-# Ruby (RubyGems installs)
-## T1072 third party software
-## https://rubygems.org
--w /usr/bin/gem -p x -k third_party_software_mgmt
-
-# LuaRocks (Lua installs)
-## T1072 third party software
-## https://luarocks.org
--w /usr/bin/luarocks -p x -k third_party_software_mgmt
-
-# Pacman (Arch Linux)
-## https://wiki.archlinux.org/title/Pacman
-## T1072 third party software
--w /etc/pacman.conf -p x -k third_party_software_mgmt
--w /etc/pacman.d -p x -k third_party_software_mgmt
    
 # Special Software ------------------------------------------------------------
 
-## GDS specific secrets
--w /etc/puppet/ssl -p wa -k puppet_ssl
-
-## IBM Bigfix BESClient
--a always,exit -F arch=b64 -S open -F dir=/opt/BESClient -F success=0 -k soft_besclient
--w /var/opt/BESClient/ -p wa -k soft_besclient
-
-## CHEF https://www.chef.io/chef/
--w /etc/chef -p wa -k soft_chef
-
-## Salt
-## https://saltproject.io/
-## https://docs.saltproject.io/en/latest/ref/configuration/master.html
--w /etc/salt -p wa -k soft_salt
--w /usr/local/etc/salt -p wa -k soft_salt
-
-## Otter
-## https://inedo.com/otter
--w /etc/otter -p wa -k soft_otter
 
 ## T1081 Credentials In Files
 -w /usr/bin/grep -p x -k string_search
--w /usr/bin/egrep -p x -k string_search
--w /usr/bin/ugrep -p x -k string_search
-### macOS
--w /usr/local/bin/grep -p x -k string_search
--w /usr/local/bin/egrep -p x -k string_search
--w /usr/local/bin/ugrep -p x -k string_search
-
-### https://github.com/tmbinc/bgrep
--w /usr/bin/bgrep -p x -k string_search
-### macOS
--w /usr/local/bin/bgrep -p x -k string_search
 
 ### https://github.com/BurntSushi/ripgrep
 -w /usr/bin/rg -p x -k string_search
 ### macOS
 -w /usr/local/bin/rg -p x -k string_search
-
-### https://github.com/awgn/cgrep
-
--w /usr/bin/cgrep -p x -k string_search
-### macOS
--w /usr/local/bin/cgrep -p x -k string_search
-
-### https://github.com/jpr5/ngrep
--w /usr/bin/ngrep -p x -k string_search
-### macOS
--w /usr/local/bin/ngrep -p x -k string_search
-
-### https://github.com/vrothberg/vgrep
--w /usr/bin/vgrep -p x -k string_search
-### macOS
--w /usr/local/bin/vgrep -p x -k string_search
-
-### https://github.com/monochromegane/the_platinum_searcher
--w /usr/bin/pt -p x -k string_search
-### macOS
--w /usr/local/bin/pt -p x -k string_search
-
-### https://github.com/gvansickle/ucg
--w /usr/bin/ucg -p x -k string_search
-### macOS
--w /usr/local/bin/ucg -p x -k string_search
-
-### https://github.com/ggreer/the_silver_searcher
--w /usr/bin/ag -p x -k string_search
-### macOS
--w /usr/local/bin/ag -p x -k string_search
-
-### https://github.com/beyondgrep/ack3
-### https://beyondgrep.com
--w /usr/bin/ack -p x -k string_search
--w /usr/local/bin/ack -p x -k string_search
--w /usr/bin/semgrep -p x -k string_search
-### macOS
--w /usr/local/bin/semgrep -p x -k string_search
 
 ## Docker
 -w /usr/bin/dockerd -k docker
