@@ -3,25 +3,28 @@
   boot.kernelPackages = pkgs.zfs.latestCompatibleLinuxPackages;
   services.zfs.autoScrub.enable = true; 
   boot.zfs.forceImportRoot = false; # If you set this option to false and NixOS subsequently fails to boot because it cannot import the root pool, you should boot with the zfs_force=1 option as a kernel parameter 
-
+  boot.kernelParams = [ "nohibernate" ];
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.forceImportRoot = false;
+ 
   # Prevent replacing the running kernel w/o reboot
   security.protectKernelImage = true;
+
   # Same thing with the kernal modules, NOTE: sudo nixos-rebuild switch has problems with this option
   security.lockKernelModules = true;
   security.virtualisation.flushL1DataCache = "always";
   security.sudo.execWheelOnly = true;  
   security.forcePageTableIsolation = true;
+
   boot.kernelParams = [
     # Slab/slub sanity checks, redzoning, and poisoning
     "slub_debug=FZP"
+
     # Overwrite free'd memory
     "page_poison=1"
+
     # Enable page allocator randomization
     "page_alloc.shuffle=1"
-   
-    # NixOS produces many wakeups per second, which is bad for battery life.
-    # This kernel parameter disables the timer tick on the last 4 cores
-    "nohz_full=4-7"
 
     "zfs_force=1"
   ];
@@ -84,10 +87,10 @@
     "kernel.yama.ptrace_scope" = 2;
 
    # Try to keep kernel address exposures out of various /proc files (kallsyms, modules, etc). (There is no CONFIG for the changing the initial value.) If root absolutely needs values from /proc, use value "1".
-kernel.kptr_restrict = 2
+    "kernel.kptr_restrict" = 2;
 
-# Avoid kernel memory address exposures via dmesg (this value can also be set by CONFIG_SECURITY_DMESG_RESTRICT).
-kernel.dmesg_restrict = 1
+  # Avoid kernel memory address exposures via dmesg (this value can also be set by CONFIG_SECURITY_DMESG_RESTRICT).
+    kernel.dmesg_restrict = 1
 
 # Block non-uid-0 profiling (needs distro patch, otherwise this is the same as "= 2")
 kernel.perf_event_paranoid = 3
