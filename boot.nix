@@ -27,14 +27,6 @@
         Restart = "on-failure";
         RestartSec = 1;
         TimeoutStopSec = 10;
-        # Sandboxing features
-        PrivateTmp=yes
-        NoNewPrivileges=true
-        ProtectSystem=strict
-        ProtectKernelTunables=yes
-        ProtectKernelModules=yes
-        ProtectControlGroups=yes
-        PrivateDevices=yes
       };
   };
    extraConfig = ''
