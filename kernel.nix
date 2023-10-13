@@ -95,8 +95,7 @@
 # Block non-uid-0 profiling (needs distro patch, otherwise this is the same as "= 2")
 kernel.perf_event_paranoid = 3
 
-# Turn off kexec, even if it's built in.
-kernel.kexec_load_disabled = 1
+
 
 # Make sure the expected default is enabled to enable full ASLR in userpsace.
 kernel.randomize_va_space = 2
