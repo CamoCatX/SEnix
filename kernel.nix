@@ -38,10 +38,10 @@
   boot.kernel.sysctl = {
     # The Magic SysRq key is a key combo that allows users connected to the
     # system console of a Linux kernel to perform some low-level commands.
-    # Disable it, since we don't need it, and is a potential security concern.
+    # It exposes a lot of potentially dangerous debugging functionality to unprivileged users
+    # If you need it, at least do = 4; then it will allow the privileged.
     "kernel.sysrq" = 0;
 
-    ## TCP hardening
     # Prevent bogus ICMP errors from filling up logs.
     "net.ipv4.icmp_ignore_bogus_error_responses" = 1;
 
@@ -72,9 +72,11 @@
     "net.ipv4.tcp_synack_retries = 5"
 
     # Incomplete protection again TIME-WAIT assassination
+    # It does this by dropping RST packets for sockets in the time-wait state.
+    # Not enabled by default because of hypothetical loss of backwards compatibility.
+    # See this discussion for details: https://serverfault.com/questions/787624/why-isnt-net-ipv4-tcp-rfc1337-enabled-by-default
     "net.ipv4.tcp_rfc1337" = 1;
 
-    ## TCP optimization
     # TCP Fast Open is a TCP extension that reduces network latency by packing
     # data in the sender’s initial TCP SYN. Setting 3 = enable TCP Fast Open for
     # both incoming and outgoing connections:
