@@ -11,7 +11,8 @@
   security.protectKernelImage = true;
 
   # Same thing with the kernal modules, NOTE: sudo nixos-rebuild switch has problems with this option
-  security.lockKernelModules = true;
+  #security.lockKernelModules = true;
+
   security.virtualisation.flushL1DataCache = "always";
   security.sudo.execWheelOnly = true;  
   security.forcePageTableIsolation = true;
@@ -36,12 +37,96 @@
     "rose"
   ];
   boot.kernel.sysctl = {
-    # The Magic SysRq key is a key combo that allows users connected to the
-    # system console of a Linux kernel to perform some low-level commands.
-    # It exposes a lot of potentially dangerous debugging functionality to unprivileged users
-    # If you need it, at least do = 4; then it will allow the privileged.
+    # Prevent boot console kernel log information leaks
+    "kernel.printk" = "3 3 3 3";
+
+    # These parameters prevent information leaks during boot and must be used
+    # in combination with the kernel.printk
+    "quiet" "loglevel=0"
+
+    # Restrict loading TTY line disciplines to the CAP_SYS_MODULE capability to
+    # prevent unprivileged attackers from loading vulnerable line disciplines with
+    # the TIOCSETD ioctl
+    "dev.tty.ldisc_autoload" = "0";
+
+    # The SysRq key exposes a lot of potentially dangerous debugging functionality to unprivileged users
+    # It is a key combo that allows users connected to the system console of a Linux kernel to perform some low-level commands.
+    # It exposes a lot of potentially dangerous debugging functionality to unprivileged users.
+    # If you need it, at least do  "kernel.sysrq" = "4"; then it will allow the privileged.
     "kernel.sysrq" = 0;
 
+    # Incomplete protection again TIME-WAIT assassination
+    # It does this by dropping RST packets for sockets in the time-wait state.
+    # Not enabled by default because of hypothetical loss of backwards compatibility.
+    # See this discussion for details: https://serverfault.com/questions/787624/why-isnt-net-ipv4-tcp-rfc1337-enabled-by-default/
+    "net.ipv4.tcp_rfc1337" = "1";
+
+    # Disable TCP SACK. SACK is commonly exploited and unnecessary for many
+    # circumstances so it should be disabled if you don't require it
+    "net.ipv4.tcp_sack" = "0";
+    "net.ipv4.tcp_dsack" = "0";
+
+    # Restrict usage of ptrace to only processes with the CAP_SYS_PTRACE
+    # capability
+    "kernel.yama.ptrace_scope" = "2";
+
+    # Prevent creating files in potentially attacker-controlled environments such
+    # as world-writable directories to make data spoofing attacks more difficult   
+    # Disables POSIX corner cases with creating files and fifos unless the directory owner matches. Check your workloads!
+    "fs.protected_fifos" = "2";
+    "fs.protected_regular" = "2";
+
+    # Disable POSIX symlink and hardlink corner cases that lead to lots of filesystem confusion attacks.
+    fs.protected_symlinks = 1
+    fs.protected_hardlinks = 1
+
+    # Disable core dumps
+    "syskernel.core_pattern" = "|/bin/false";
+
+    # Make sure the default process dumpability is set (processes that changed privileges aren't dumpable).
+    "fs.suid_dumpable" = "0";
+
+    # Disable slab merging which significantly increases the difficulty of heap
+    # exploitation by preventing overwriting objects from merged caches and by
+    # making it harder to influence slab cache layout
+    "slab_nomerge"
+
+    # Disable vsyscalls as they are obsolete and have been replaced with vDSO.
+    # vsyscalls are also at fixed addresses in memory, making them a potential
+    # target for ROP attacks
+    "vsyscall=none"
+
+    # Disable debugfs which exposes a lot of sensitive information about the
+    # kernel
+    "debugfs=off"
+
+    # Sometimes certain kernel exploits will cause what is known as an "oops".
+    # This parameter will cause the kernel to panic on such oopses, thereby
+    # preventing those exploits
+    "oops=panic"
+
+    # Only allow kernel modules that have been signed with a valid key to be
+    # loaded, which increases security by making it much harder to load a
+    # malicious kernel module
+    "module.sig_enforce=1"
+
+    # The kernel lockdown LSM can eliminate many methods that user space code
+    # could abuse to escalate to kernel privileges and extract sensitive
+    # information. This LSM is necessary to implement a clear security boundary
+    # between user space and the kernel
+    "lockdown=confidentiality"
+
+    # Incomplete protection again TIME-WAIT assassination
+    # It does this by dropping RST packets for sockets in the time-wait state.
+    # Not enabled by default because of hypothetical loss of backwards compatibility.
+    # See this discussion for details: https://serverfault.com/questions/787624/why-isnt-net-ipv4-tcp-rfc1337-enabled-by-default/
+    "net.ipv4.tcp_rfc1337" = "1";
+
+    # Disable TCP SACK. SACK is commonly exploited and unnecessary for many
+    # circumstances so it should be disabled if you don't require it
+    "net.ipv4.tcp_sack" = "0";
+    "net.ipv4.tcp_dsack" = "0";
+  
     # Prevent bogus ICMP errors from filling up logs.
     "net.ipv4.icmp_ignore_bogus_error_responses" = 1;
 
@@ -71,12 +156,6 @@
     "net.ipv4.tcp_syncookies" = 1;
     "net.ipv4.tcp_synack_retries = 5"
 
-    # Incomplete protection again TIME-WAIT assassination
-    # It does this by dropping RST packets for sockets in the time-wait state.
-    # Not enabled by default because of hypothetical loss of backwards compatibility.
-    # See this discussion for details: https://serverfault.com/questions/787624/why-isnt-net-ipv4-tcp-rfc1337-enabled-by-default
-    "net.ipv4.tcp_rfc1337" = 1;
-
     # TCP Fast Open is a TCP extension that reduces network latency by packing
     # data in the sender’s initial TCP SYN. Setting 3 = enable TCP Fast Open for
     # both incoming and outgoing connections:
@@ -85,6 +164,9 @@
     # Bufferbloat mitigations + slight improvement in throughput & latency
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "cake";
+
+     #oid leaking system time with TCP timestamps
+    "net.ipv4.tcp_timestamps" = "0";
 
     "kernel.yama.ptrace_scope" = 2;
 
@@ -111,9 +193,6 @@ user.max_user_namespaces = 0
 # Disable tty line discipline autoloading (see CONFIG_LDISC_AUTOLOAD).
 dev.tty.ldisc_autoload = 0
 
-# Disable TIOCSTI which is used to inject keypresses. (This will, however, break screen readers.)
-dev.tty.legacy_tiocsti = 0
-
 # Turn off unprivileged eBPF access.
 kernel.unprivileged_bpf_disabled = 1
 
@@ -123,16 +202,7 @@ net.core.bpf_jit_harden = 2
 # Disable userfaultfd for unprivileged processes.
 vm.unprivileged_userfaultfd = 0
 
-# Disable POSIX symlink and hardlink corner cases that lead to lots of filesystem confusion attacks.
-fs.protected_symlinks = 1
-fs.protected_hardlinks = 1
 
-# Disable POSIX corner cases with creating files and fifos unless the directory owner matches. Check your workloads!
-fs.protected_fifos = 2
-fs.protected_regular = 2
-
-# Make sure the default process dumpability is set (processes that changed privileges aren't dumpable).
-fs.suid_dumpable = 0
 
   };
   boot.kernelModules = ["tcp_bbr"];
